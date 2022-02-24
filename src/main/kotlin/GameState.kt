@@ -7,4 +7,5 @@ data class GameState(
     val oldState: List<List<String>> = listOf(),
     val currentState: List<List<String>> = listOf(),
     val solvedState: List<List<String>> = listOf(),
+    val heuristic: Double = 0.0,
     )

@@ -1,5 +1,6 @@
 package utils
 
+import models.Coordinates
 import kotlin.random.Random
 
 fun MutableList<String>.swap(index1: Int, index2: Int) {
@@ -31,4 +32,16 @@ fun MutableList<String>.toGrid(dimensionSize:Int) : MutableList<MutableList<Stri
         grid.add(row)
     }
     return grid
+}
+
+fun List<List<String>>.findIndexes(value: String) : Coordinates{
+    val dimensionSize = this.size
+    for (i in 0 until dimensionSize){
+        for (j in 0 until dimensionSize){
+            if (this[i][j] == value){
+                return Coordinates(i, j)
+            }
+        }
+    }
+    return Coordinates(-1, -1)
 }
