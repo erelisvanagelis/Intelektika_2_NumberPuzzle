@@ -35,23 +35,23 @@ fun App() {
             )
 
             Box(modifier = Modifier.fillMaxHeight(0.85f), contentAlignment = Alignment.Center) {
-                GridButtonContainer(grid = game.state.currentArray, onButtonClick = game::buttonPressed)
+                GridButtonContainer(grid = state.currentState, onButtonClick = game::buttonPressed)
             }
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
                 Text(text = "Current step: ${state.currentStep}")
-                Text(text = "Total step count: ${state.numberOfSteps}")
+                Text(text = "Total step count: ${state.totalSteps}")
                 Text(text = "Time: ${state.totalTime}")
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
-                    onClick = { game.generateGrid(gridSize.toInt()) },
+                    onClick = { game.scramblePuzzle(gridSize.toInt()) },
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     Text("Scramble")
                 }
                 Button(
-                    onClick = { game.generateGrid(gridSize.toInt()) },
+                    onClick = { game.scramblePuzzle(gridSize.toInt()) },
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     Text("Solve")
