@@ -1,11 +1,8 @@
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import utils.findIndexes
-import utils.randomizeList
-import utils.toGrid
-import java.util.*
-import kotlin.math.abs
+import models.Node
+import utils.*
 
 class Game {
     var state by mutableStateOf(GameState())
@@ -20,6 +17,20 @@ class Game {
         return list
     }
 
+    fun canScramblePuzzle(dimensionSize: String) {
+        val value = dimensionSize.toIntOrNull()
+        if (value == null) {
+            state = GameState(message = "Grid size must be entered")
+        }
+        dimensionSize.toIntOrNull()?.let {
+            if (it > 2) {
+                scramblePuzzle(it)
+            } else {
+                state = GameState(message = "Grid size > 2")
+            }
+        }
+    }
+
     fun scramblePuzzle(dimensionSize: Int) {
         val solved = generateList(dimensionSize * dimensionSize - 1).toGrid(dimensionSize)
         val scrambled = generateList(dimensionSize * dimensionSize - 1)
@@ -27,6 +38,7 @@ class Game {
         val randomizedGrid = scrambled.toGrid(dimensionSize)
         state = GameState(
             dimensionSize = dimensionSize,
+            message = "Press Solve button to do the thing",
             heuristic = totalHeuristic(randomizedGrid, solved),
             solvedState = solved,
             currentState = randomizedGrid,
@@ -35,34 +47,41 @@ class Game {
         println(state)
     }
 
-    fun solvePuzzle(){
-//        val test1 = state.currentState[0][0]
-//        val (i, j) = state.solvedState.findIndexes(test1)
-//        val distance = manhatanDistance(0, 0)
+    fun solvePuzzle() {
+        state = GameState(
+            message = "Searching for solution...",
+            oldState = state.currentState,
+            dimensionSize = state.dimensionSize,
+            solvedState = state.solvedState,
+            heuristic = state.heuristic,
+            currentStep = state.currentStep,
+            currentState = state.currentState,
+        )
+        val node = Node(state.currentState.gridToMutable(), state.solvedState, price = 0)
+        val result = node.doTheThing()
+        println(result)
 
     }
-
-    fun totalHeuristic(scrambled: List<List<String>>, solved: List<List<String>>) : Double{
-        var sum = 0.0
-        for (i in scrambled.indices){
-            for (j in scrambled.indices){
-                println("i: $i, j: $j")
-                val (x, y) = solved.findIndexes(scrambled[i][j])
-                val distance = manhatanDistance(x, y, i, j)
-                sum += distance
-            }
-        }
-        return sum
-    }
-
-    fun manhatanDistance(i1:Int, j1:Int, i2:Int, j2:Int): Int {
-        return abs(i1 - i2) + abs(j1 - j2)
-    }
-
 
     fun buttonPressed(x: Int, y: Int) {
         val (i, j) = state.solvedState.findIndexes(state.currentState[x][y])
         val distance = manhatanDistance(x, y, i, j)
         println("x: $x, y: $y, i: $i, j: $j, value: ${state.currentState[x][y]}, distance: $distance")
+
+        val (blankI, blankJ) = state.currentState.findIndexes("")
+        val coordinates = state.currentState.indexesBorderingValue("")
+        coordinates.find { coordinate -> coordinate.i == x && coordinate.j == y }?.let {
+            val swapped = state.currentState.gridToMutable()
+            swapped.swapValues(x, y, blankI, blankJ)
+            state = GameState(
+                message = "Moving pieces",
+                oldState = state.currentState,
+                dimensionSize = state.dimensionSize,
+                solvedState = state.solvedState,
+                heuristic = state.heuristic,
+                currentStep = state.currentStep + 1,
+                currentState = swapped,
+            )
+        }
     }
 }

@@ -18,7 +18,7 @@ import common.GridButtonContainer
 fun App() {
     val game = remember { Game() }
     val state = game.state
-    var gridSize by remember { mutableStateOf("") }
+    var gridSize by remember { mutableStateOf("3") }
 
     MaterialTheme {
         Column(
@@ -34,8 +34,16 @@ fun App() {
                 label = { Text("Grid Size") },
             )
 
-            Box(modifier = Modifier.fillMaxHeight(0.85f), contentAlignment = Alignment.Center) {
-                GridButtonContainer(grid = state.currentState, onButtonClick = game::buttonPressed)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                Text(text = state.message)
+            }
+
+            Box(modifier = Modifier.fillMaxHeight(0.82f), contentAlignment = Alignment.Center) {
+                GridButtonContainer(
+                    oldGrid = state.oldState,
+                    newGrid = state.currentState,
+                    onButtonClick = game::buttonPressed
+                )
             }
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
@@ -45,22 +53,19 @@ fun App() {
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
-                    onClick = { game.scramblePuzzle(gridSize.toInt()) },
+                    onClick = { game.canScramblePuzzle(gridSize) },
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     Text("Scramble")
                 }
                 Button(
-                    onClick = { game.scramblePuzzle(gridSize.toInt()) },
+                    onClick = { game.solvePuzzle() },
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     Text("Solve")
                 }
             }
-
         }
-
-
     }
 }
 
