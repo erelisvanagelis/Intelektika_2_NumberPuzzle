@@ -1,50 +1,34 @@
 package utils
 
 import models.Coordinates
+import org.jetbrains.kotlinx.multik.ndarray.data.Dimension
+import org.jetbrains.kotlinx.multik.ndarray.data.NDArray
+import org.jetbrains.kotlinx.multik.ndarray.data.get
+import org.jetbrains.kotlinx.multik.ndarray.data.set
+import kotlin.math.sqrt
 import kotlin.random.Random
 
-fun MutableList<String>.swap(index1: Int, index2: Int) {
+fun MutableList<Int>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
 }
-fun MutableList<String>.randomizeList(changeCount: Int){
+fun MutableList<Int>.randomizeList(changeCount: Int): MutableList<Int> {
     val size = this.size
+    val randomizedList = this.toMutableList()
     for (i in 0..changeCount){
         val x = Random.nextInt(0, size)
         val y = Random.nextInt(0, size)
-        this.swap(x, y)
+        randomizedList.swap(x, y)
     }
+    return randomizedList
 }
 
-fun MutableList<String>.toGrid(dimensionSize:Int) : MutableList<MutableList<String>> {
-    val grid: MutableList<MutableList<String>> = mutableListOf()
-    val copy = this.toMutableList()
-    for (i in 1..dimensionSize){
-        val row: MutableList<String> = mutableListOf()
-        for (j in 1..dimensionSize){
-            if (copy.size == 0){
-                break
-            }
-            row.add(copy.first())
-            copy.removeFirst()
-        }
-        grid.add(row)
-    }
-    return grid
-}
-
-fun MutableList<MutableList<String>>.swapValues(i1: Int, j1: Int, i2: Int, j2: Int) {
-    val tmp = this[i1][j1]
-    this[i1][j1] = this[i2][j2]
-    this[i2][j2] = tmp
-}
-
-fun List<List<String>>.findIndexes(value: String) : Coordinates{
-    val dimensionSize = this.size
+fun <T, D : Dimension> NDArray<T, D>.findIndexes(t: T): Coordinates {
+    val dimensionSize = sqrt(this.size.toDouble()).toInt()
     for (i in 0 until dimensionSize){
         for (j in 0 until dimensionSize){
-            if (this[i][j] == value){
+            if (this.asD2Array()[i, j] == t){
                 return Coordinates(i, j)
             }
         }
@@ -52,49 +36,27 @@ fun List<List<String>>.findIndexes(value: String) : Coordinates{
     return Coordinates(-1, -1)
 }
 
-fun List<List<String>>.gridToMutable() : MutableList<MutableList<String>> {
-    val dimensionSize = this.size
-    val mutableList = mutableListOf<MutableList<String>>()
-    for (i in 0 until dimensionSize){
-        mutableList.add(this[i].toMutableList())
-    }
-    return mutableList
-}
-
-fun List<List<String>>.indexesBorderingValue(value: String): MutableList<Coordinates> {
+fun <T, D : Dimension> NDArray<T, D>.findBordering(i:Int, j:Int): List<Coordinates> {
+    val dimensionSize = sqrt(this.size.toDouble()).toInt()
     val coordinatesList = mutableListOf<Coordinates>()
-    val (i, j) = this.findIndexes(value)
     if (i - 1 >= 0) {
         coordinatesList.add(Coordinates(i - 1, j))
     }
-    if (i + 1 < this.size) {
+    if (i + 1 < dimensionSize) {
         coordinatesList.add(Coordinates(i + 1, j))
     }
     if (j - 1 >= 0) {
         coordinatesList.add(Coordinates(i, j - 1))
     }
-    if (j + 1 < this.size) {
+    if (j + 1 < dimensionSize) {
         coordinatesList.add(Coordinates(i, j + 1))
     }
 
     return coordinatesList
 }
 
-//fun MutableList<MutableList<String>>.indexesBorderingValue(value: String): MutableList<Coordinates> {
-//    val coordinatesList = mutableListOf<Coordinates>()
-//    val (i, j) = this.findIndexes(value)
-//    if (i - 1 >= 0) {
-//        coordinatesList.add(Coordinates(i - 1, j))
-//    }
-//    if (i + 1 < this.size) {
-//        coordinatesList.add(Coordinates(i + 1, j))
-//    }
-//    if (j - 1 >= 0) {
-//        coordinatesList.add(Coordinates(i, j - 1))
-//    }
-//    if (j + 1 < this.size) {
-//        coordinatesList.add(Coordinates(i, j + 1))
-//    }
-//
-//    return coordinatesList
-//}
+fun <T, D : Dimension> NDArray<T, D>.swap(i: Int, j: Int, x: Int, y: Int) {
+    val tmp = this.asD2Array()[i, j]
+    this.asD2Array()[i, j] = this.asD2Array()[x, y]
+    this.asD2Array()[x, y] = tmp
+}

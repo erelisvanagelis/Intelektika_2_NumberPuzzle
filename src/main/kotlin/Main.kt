@@ -40,8 +40,7 @@ fun App() {
 
             Box(modifier = Modifier.fillMaxHeight(0.82f), contentAlignment = Alignment.Center) {
                 GridButtonContainer(
-                    oldGrid = state.oldState,
-                    newGrid = state.currentState,
+                    grid = state.currentState,
                     onButtonClick = game::buttonPressed
                 )
             }

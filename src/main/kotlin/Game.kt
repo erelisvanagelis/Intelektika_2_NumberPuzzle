@@ -1,18 +1,22 @@
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import models.Node
-import utils.*
+import org.jetbrains.kotlinx.multik.api.mk
+import org.jetbrains.kotlinx.multik.api.ndarray
+import org.jetbrains.kotlinx.multik.ndarray.data.D2
+import utils.findBordering
+import utils.findIndexes
+import utils.randomizeList
+import utils.swap
 
 class Game {
     var state by mutableStateOf(GameState())
         private set
 
-    fun generateList(maxValue: Int): MutableList<String> {
-        val list = mutableListOf<String>()
-        list.add("")
-        for (i in 1..maxValue) {
-            list.add("$i")
+    fun generateList(maxValue: Int): MutableList<Int> {
+        val list = mutableListOf<Int>()
+        for (i in 0..maxValue) {
+            list.add(i)
         }
         return list
     }
@@ -32,56 +36,61 @@ class Game {
     }
 
     fun scramblePuzzle(dimensionSize: Int) {
-        val solved = generateList(dimensionSize * dimensionSize - 1).toGrid(dimensionSize)
-        val scrambled = generateList(dimensionSize * dimensionSize - 1)
-        scrambled.randomizeList(dimensionSize * 100)
-        val randomizedGrid = scrambled.toGrid(dimensionSize)
+        val maxValue = dimensionSize * dimensionSize - 1
+        val solved = mk.ndarray<Int, D2>(
+            generateList(maxValue),
+            intArrayOf(dimensionSize, dimensionSize)
+        )
+        val scrambled = mk.ndarray<Int, D2>(
+            generateList(maxValue).randomizeList(100),
+            intArrayOf(dimensionSize, dimensionSize)
+        )
         state = GameState(
             dimensionSize = dimensionSize,
             message = "Press Solve button to do the thing",
-            heuristic = totalHeuristic(randomizedGrid, solved),
             solvedState = solved,
-            currentState = randomizedGrid,
-            oldState = randomizedGrid,
+            currentState = scrambled,
         )
-        println(state)
     }
 
     fun solvePuzzle() {
         state = GameState(
             message = "Searching for solution...",
-            oldState = state.currentState,
             dimensionSize = state.dimensionSize,
             solvedState = state.solvedState,
-            heuristic = state.heuristic,
             currentStep = state.currentStep,
             currentState = state.currentState,
         )
-        val node = Node(state.currentState.gridToMutable(), state.solvedState, price = 0)
-        val result = node.doTheThing()
-        println(result)
-
+//        try {
+//            val node = Node(state.currentState.gridToMutable(), state.solvedState, price = 0)
+//            val result = node.doTheThing()
+//            println(result)
+//        } catch (e: Exception) {
+//            state = GameState(
+//                message = "${e.localizedMessage} \n :(",
+//                dimensionSize = state.dimensionSize,
+//                solvedState = state.solvedState,
+//                currentStep = state.currentStep,
+//                currentState = state.currentState,
+//            )
+//        }
     }
 
     fun buttonPressed(x: Int, y: Int) {
-        val (i, j) = state.solvedState.findIndexes(state.currentState[x][y])
-        val distance = manhatanDistance(x, y, i, j)
-        println("x: $x, y: $y, i: $i, j: $j, value: ${state.currentState[x][y]}, distance: $distance")
-
-        val (blankI, blankJ) = state.currentState.findIndexes("")
-        val coordinates = state.currentState.indexesBorderingValue("")
+        val blankCoordinates = state.currentState.findIndexes(0)
+        val coordinates = state.currentState.findBordering(blankCoordinates.i, blankCoordinates.j)
         coordinates.find { coordinate -> coordinate.i == x && coordinate.j == y }?.let {
-            val swapped = state.currentState.gridToMutable()
-            swapped.swapValues(x, y, blankI, blankJ)
+            val copy = state.currentState.copy()
+            copy.swap(blankCoordinates.i, blankCoordinates.j, it.i, it.j)
             state = GameState(
                 message = "Moving pieces",
-                oldState = state.currentState,
                 dimensionSize = state.dimensionSize,
                 solvedState = state.solvedState,
-                heuristic = state.heuristic,
                 currentStep = state.currentStep + 1,
-                currentState = swapped,
+                currentState = copy,
             )
         }
     }
 }
+
+
