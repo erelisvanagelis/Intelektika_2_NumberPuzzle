@@ -4,10 +4,7 @@ import androidx.compose.runtime.setValue
 import org.jetbrains.kotlinx.multik.api.mk
 import org.jetbrains.kotlinx.multik.api.ndarray
 import org.jetbrains.kotlinx.multik.ndarray.data.D2
-import utils.findBordering
-import utils.findIndexes
-import utils.randomizeList
-import utils.swap
+import utils.*
 
 class Game {
     var state by mutableStateOf(GameState())
@@ -42,7 +39,7 @@ class Game {
             intArrayOf(dimensionSize, dimensionSize)
         )
         val scrambled = mk.ndarray<Int, D2>(
-            generateList(maxValue).randomizeList(100),
+            generateList(maxValue).randomizeList(10),
             intArrayOf(dimensionSize, dimensionSize)
         )
         state = GameState(
@@ -53,7 +50,20 @@ class Game {
         )
     }
 
-    fun solvePuzzle() {
+    fun canSolvePuzzle(iterationLimit: String) {
+        val value = iterationLimit.toIntOrNull()
+        if (value == null) {
+            state = GameState(message = "Grid size must be entered")
+        }
+        iterationLimit.toIntOrNull()?.let {
+            if (it > 0) {
+                solvePuzzle(it)
+            } else {
+                state = GameState(message = "Grid size > 2")
+            }
+        }
+    }
+    fun solvePuzzle(iterationLimit: Int) {
         state = GameState(
             message = "Searching for solution...",
             dimensionSize = state.dimensionSize,
@@ -61,19 +71,32 @@ class Game {
             currentStep = state.currentStep,
             currentState = state.currentState,
         )
-//        try {
-//            val node = Node(state.currentState.gridToMutable(), state.solvedState, price = 0)
-//            val result = node.doTheThing()
-//            println(result)
-//        } catch (e: Exception) {
-//            state = GameState(
-//                message = "${e.localizedMessage} \n :(",
-//                dimensionSize = state.dimensionSize,
-//                solvedState = state.solvedState,
-//                currentStep = state.currentStep,
-//                currentState = state.currentState,
-//            )
-//        }
+        try {
+            val bestNode = stupidAStar(state.currentState, state.solvedState, iterationLimit = iterationLimit)
+            var message = "Solution found"
+            if (bestNode.heuristic != 0.0){
+                message = "Iteration limit reached"
+            }
+            state = GameState(
+                message = message,
+                dimensionSize = state.dimensionSize,
+                solvedState = state.solvedState,
+                currentStep = bestNode.price,
+                currentState = bestNode.current,
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+//            printStackTrace(e.stackTrace)
+//            println(e.stackTrace.toString())
+//            e.stackTrace
+            state = GameState(
+                message = "${e.localizedMessage} \n :(",
+                dimensionSize = state.dimensionSize,
+                solvedState = state.solvedState,
+                currentStep = state.currentStep,
+                currentState = state.currentState,
+            )
+        }
     }
 
     fun buttonPressed(x: Int, y: Int) {

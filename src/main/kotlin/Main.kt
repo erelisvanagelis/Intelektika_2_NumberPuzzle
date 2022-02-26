@@ -19,6 +19,8 @@ fun App() {
     val game = remember { Game() }
     val state = game.state
     var gridSize by remember { mutableStateOf("3") }
+    var iterationLimit by remember { mutableStateOf("100000") }
+//    var pruneH by remember { mutableStateOf(false) }
 
     MaterialTheme {
         Column(
@@ -26,17 +28,28 @@ fun App() {
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                value = gridSize,
-                onValueChange = {
-                    gridSize = it
-                },
-                label = { Text("Grid Size") },
-            )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                OutlinedTextField(
+                    value = iterationLimit,
+                    onValueChange = {
+                        iterationLimit = it
+                    },
+                    label = { Text("Iteration limit") },
+                )
+
+                OutlinedTextField(
+                    value = gridSize,
+                    onValueChange = {
+                        gridSize = it
+                    },
+                    label = { Text("Grid Size") },
+                )
+            }
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-                Text(text = state.message)
+
             }
+            Text(text = state.message)
 
             Box(modifier = Modifier.fillMaxHeight(0.82f), contentAlignment = Alignment.Center) {
                 GridButtonContainer(
@@ -58,7 +71,7 @@ fun App() {
                     Text("Scramble")
                 }
                 Button(
-                    onClick = { game.solvePuzzle() },
+                    onClick = { game.canSolvePuzzle(iterationLimit = iterationLimit) },
                     modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     Text("Solve")

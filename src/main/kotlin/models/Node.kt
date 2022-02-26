@@ -1,59 +1,40 @@
 package models
 
 import org.jetbrains.kotlinx.multik.ndarray.data.D2Array
+import utils.findBordering
 import utils.findIndexes
+import utils.swap
 import utils.totalHeuristic
 
-class Node (val grid: D2Array<Int>, val solved: D2Array<Int>, val price: Int) {
-    val heuristic: Double = totalHeuristic(grid, solved)
-    val nodes = mutableListOf<Node>()
-    var childrenGenerated = false
+class Node(val current: D2Array<Int>, val solved: D2Array<Int>, val price: Int, val parent: Node?) {
+    val heuristic: Double = totalHeuristic(current, solved)
+    val f = price + heuristic
 
-//    fun generateChildren () {
-//        val (blankI, blankJ) = grid.findIndexes("")
-//        val coordinates = grid.indexesBorderingValue("")
-//        for(i in coordinates){
-//            val copy = grid.toMutableList()
-//            copy.swapValues(blankI, blankJ, i.i, i.j)
-//            nodes.add(Node(
-//                grid = copy,
-//                solved = solved,
-//                price = price + 1
-//            ))
-//        }
-//    }
-
-    fun sortChildren(){
-        nodes.sortBy{
-            it.heuristic
+    fun generateLeaves(): List<Node> {
+        val leaves = mutableListOf<Node>()
+        val blankCoordinates = current.findIndexes(0)
+        val coordinates = current.findBordering(blankCoordinates.i, blankCoordinates.j)
+        for (i in coordinates) {
+            val copy = current.copy()
+            copy.swap(blankCoordinates.i, blankCoordinates.j, i.i, i.j)
+            if (copy != parent?.current){
+                leaves.add(
+                    Node(
+                        current = copy,
+                        solved = solved,
+                        price = price + 1,
+                        parent = this,
+                    )
+                )
+            }
         }
-        nodes.forEach {
-            println(it.heuristic)
-        }
+        return leaves
     }
 
-    fun doTheThing() : String{
-        if (heuristic == 0.0){
-            return "completed"
+    fun findRoot(addState: (D2Array<Int>) -> Unit){
+        addState(current)
+        parent?.let{
+            parent.findRoot(addState)
         }
-
-        if (!childrenGenerated){
-            childrenGenerated = true
-//            generateChildren()
-            sortChildren()
-        }
-
-        if (nodes.size == 0){
-            return "end"
-        }
-
-
-
-        var result = nodes.first().doTheThing();
-        if (result == "end"){
-            nodes.removeFirst()
-            result = doTheThing()
-        }
-        return result
     }
 }
