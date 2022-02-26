@@ -19,7 +19,7 @@ fun App() {
     val game = remember { Game() }
     val state = game.state
     var gridSize by remember { mutableStateOf("3") }
-    var iterationLimit by remember { mutableStateOf("100000") }
+    var iterationLimit by remember { mutableStateOf("10000") }
 //    var pruneH by remember { mutableStateOf(false) }
 
     MaterialTheme {

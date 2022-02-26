@@ -14,7 +14,7 @@ fun totalHeuristic(scrambled: D2Array<Int>, solved: D2Array<Int>): Double {
         for (j in 0 until dimensionSize) {
             val (x, y) = solved.findIndexes(scrambled[i, j])
             val distance = manhatanDistance(x, y, i, j)
-            sum += distance
+            sum += 100 * distance
         }
     }
     return sum
@@ -27,9 +27,9 @@ fun manhatanDistance(i1: Int, j1: Int, i2: Int, j2: Int): Int {
 fun stupidAStar(current: D2Array<Int>, solved: D2Array<Int>, iterationLimit: Int): Node {
     println("stupidAStar")
     var frontiers: MutableList<Node> = mutableListOf(Node(current = current, solved = solved, price = 0, parent = null))
-    var i:Int = 0
-    val heuristic = totalHeuristic(scrambled = current, solved = solved)
+    val expandedNodes: MutableList<Node> = mutableListOf()
     var bestNode: Node = frontiers.first()
+    var i:Int = 0
     while (frontiers.first().heuristic != 0.0 && i < iterationLimit){
         val leaves = frontiers.first().generateLeaves().toMutableList()
         val sortedLeaves = leaves.sortedBy { it.heuristic }
@@ -43,16 +43,24 @@ fun stupidAStar(current: D2Array<Int>, solved: D2Array<Int>, iterationLimit: Int
             bestNode = closest
         }
 
+        expandedNodes.add(frontiers.first())
         frontiers.removeFirst()
+
+        leaves.forEach {
+            val found = frontiers.find { node -> it.current == node.current }
+            if (found == null){
+                frontiers.add(it)
+            } else if (found.price > it.price){
+                frontiers.remove(found)
+                frontiers.add(it)
+            }
+        }
+
         frontiers.addAll(leaves)
         frontiers = frontiers.sortedBy {it.f}.toMutableList()
 
         println("i= $i, price=${frontiers.first().price}, bestF= ${frontiers.first().f}, bestH=${frontiers.first().heuristic}")
         i++
     }
-//    frontiers.sortedBy { it.heuristic }
-    println("i= $i, price=${frontiers.first().price}, bestF= ${frontiers.first().f}, bestH=${frontiers.first().heuristic}")
-
-//    return "i= $i, price=${frontiers.first().price}, bestF= ${frontiers.first().f}, bestH=${frontiers.first().heuristic}"
     return bestNode
 }

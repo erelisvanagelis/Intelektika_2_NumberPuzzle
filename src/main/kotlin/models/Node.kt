@@ -6,7 +6,7 @@ import utils.findIndexes
 import utils.swap
 import utils.totalHeuristic
 
-class Node(val current: D2Array<Int>, val solved: D2Array<Int>, val price: Int, val parent: Node?) {
+class Node(val current: D2Array<Int>, val solved: D2Array<Int>, var price: Int, val parent: Node?) {
     val heuristic: Double = totalHeuristic(current, solved)
     val f = price + heuristic
 
@@ -29,6 +29,10 @@ class Node(val current: D2Array<Int>, val solved: D2Array<Int>, val price: Int, 
             }
         }
         return leaves
+    }
+
+    fun recalculatePrice(){
+
     }
 
     fun findRoot(addState: (D2Array<Int>) -> Unit){

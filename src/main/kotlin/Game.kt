@@ -4,6 +4,8 @@ import androidx.compose.runtime.setValue
 import org.jetbrains.kotlinx.multik.api.mk
 import org.jetbrains.kotlinx.multik.api.ndarray
 import org.jetbrains.kotlinx.multik.ndarray.data.D2
+import org.jetbrains.kotlinx.multik.ndarray.data.get
+import org.jetbrains.kotlinx.multik.ndarray.data.set
 import utils.*
 
 class Game {
@@ -38,6 +40,7 @@ class Game {
             generateList(maxValue),
             intArrayOf(dimensionSize, dimensionSize)
         )
+
         val scrambled = mk.ndarray<Int, D2>(
             generateList(maxValue).randomizeList(10),
             intArrayOf(dimensionSize, dimensionSize)
@@ -72,7 +75,9 @@ class Game {
             currentState = state.currentState,
         )
         try {
-            val bestNode = stupidAStar(state.currentState, state.solvedState, iterationLimit = iterationLimit)
+            val aStar = AStar(state.currentState, state.solvedState)
+            val bestNode = aStar.search(iterationLimit)
+//            val bestNode = stupidAStar(, iterationLimit = iterationLimit)
             var message = "Solution found"
             if (bestNode.heuristic != 0.0){
                 message = "Iteration limit reached"
@@ -86,9 +91,6 @@ class Game {
             )
         } catch (e: Exception) {
             e.printStackTrace()
-//            printStackTrace(e.stackTrace)
-//            println(e.stackTrace.toString())
-//            e.stackTrace
             state = GameState(
                 message = "${e.localizedMessage} \n :(",
                 dimensionSize = state.dimensionSize,
