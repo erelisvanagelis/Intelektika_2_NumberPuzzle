@@ -31,14 +31,10 @@ class Node(val current: D2Array<Int>, val solved: D2Array<Int>, var price: Int, 
         return leaves
     }
 
-    fun recalculatePrice(){
-
-    }
-
-    fun findRoot(addState: (D2Array<Int>) -> Unit){
+    fun findRootPath(addState: (D2Array<Int>) -> Unit){
         addState(current)
         parent?.let{
-            parent.findRoot(addState)
+            parent.findRootPath(addState)
         }
     }
 }

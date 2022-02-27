@@ -25,7 +25,7 @@ fun GridButtonContainer(
         for (i in 0 until dimensionSize) {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 for (j in 0 until dimensionSize) {
-                    if (grid[i, j] != 0){
+                    if (grid[i, j] != 0) {
                         GridButton(
                             value = "${grid[i, j]}",
                             x = i,
