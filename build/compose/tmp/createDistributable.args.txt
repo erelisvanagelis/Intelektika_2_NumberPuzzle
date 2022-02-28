@@ -7,7 +7,7 @@
 --java-options
 "'-Dcompose.application.resources.dir=$APPDIR\\resources'"
 --main-jar
-"C:\\Users\\Acer\\IdeaProjects\\Intelektika_2_NumberPuzzle\\build\\compose\\tmp\\createDistributable\\libs\\Intelektika_2-1.0-704327d61cbf9911c31f3561211e0.jar"
+"C:\\Users\\Acer\\IdeaProjects\\Intelektika_2_NumberPuzzle\\build\\compose\\tmp\\createDistributable\\libs\\Intelektika_2-1.0-5bae1e6db4f16cd6136955b8de226689.jar"
 --main-class
 "MainKt"
 --icon
