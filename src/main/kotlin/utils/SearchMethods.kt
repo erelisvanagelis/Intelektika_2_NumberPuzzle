@@ -13,6 +13,7 @@ fun totalHeuristic(scrambled: D2Array<Int>, solved: D2Array<Int>): Double {
         for (j in 0 until dimensionSize) {
             val (x, y) = solved.findIndexes(scrambled[i, j])
             val distance = manhatanDistance(x, y, i, j)
+//            sum += distance
             sum += dimensionSize * dimensionSize * distance
         }
     }

@@ -9,29 +9,22 @@ class AStar(current: D2Array<Int>, solved: D2Array<Int>) {
     val expandedNodes: MutableList<Node> = mutableListOf()
     var bestNode: Node = frontierNodes.first()
     var isActive = false
+    var i = 0
 
     fun search(iterationLimit: Int): Node {
-        println("AStar - search")
-        if (bestNode.heuristic == 0.0) {
-            return bestNode
-        }
+        println("AStar - search, iterationLimit = $iterationLimit")
         isActive = true
-
-        var i = 0
+        i = 0
         while (frontierNodes.size != 0 && i < iterationLimit) {
-            val leaves = frontierNodes.first().generateLeaves()
-
-            val expandedNode = expandedNodes.find { x -> x.current == frontierNodes.first().current }
-            if (expandedNode == null) {
-                expandedNodes.add(frontierNodes.first())
-            } else if (expandedNode.f > frontierNodes.first().f) {
-                expandedNodes.add(frontierNodes.first())
+            val first = frontierNodes.first()
+            if(bestNode.heuristic == 0.0 && bestNode.f <= first.f){
+                break
             }
+
+            val leaves = first.generateLeaves()
+            expandedNodes.add(first)
             frontierNodes.removeFirst()
-
             leaves.forEach { placeLeaf(it) }
-
-            frontierNodes.sortBy { it.f }
 
             if (frontierNodes.size > 0) {
                 println("frontierNodes.size= ${frontierNodes.size}, expandedNodes.size= ${expandedNodes.size}")
@@ -48,32 +41,23 @@ class AStar(current: D2Array<Int>, solved: D2Array<Int>) {
     fun placeLeaf(node: Node) {
         if (bestNode.f > node.f) {
             bestNode = node
-        }
-
-        if (node.heuristic == 0.0) {
-            val filtered = frontierNodes.filter { x -> x.price < node.price }
-            frontierNodes = filtered.toMutableList()
             return
         }
-
-        if (bestNode.heuristic == 0.0 && bestNode.f <= node.f) {
-            expandedNodes.add(node)
-            return
-        }
-
-        val expandedMatch = expandedNodes.find { x -> x.current == node.current }
-        val frontierMatch = frontierNodes.find { x -> x.current == node.current }
-
-
-
-        if (expandedMatch == null && frontierMatch == null) {
-            frontierNodes.add(node)
-        } else if (expandedMatch != null && frontierMatch == null && expandedMatch.price > node.price) {
-            frontierNodes.add(node)
-        } else if (frontierMatch != null && frontierMatch.price > node.price) {
-            frontierNodes.remove(frontierMatch)
-            frontierNodes.add(node)
-        }
+        insertIntoOrderedList(frontierNodes, node)
     }
 
+    fun insertIntoOrderedList(list: MutableList<Node>, node: Node){
+        var added = false
+        for (i in list.indices){
+            if (list[i].f > node.f){
+                list.add(i, node)
+                added = true
+                break
+            }
+        }
+
+        if (!added){
+            list.add(node)
+        }
+    }
 }

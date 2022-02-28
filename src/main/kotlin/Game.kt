@@ -111,7 +111,7 @@ class Game {
             bestNode.findRootPath { temp.add(it) }
             var status = "Success"
 
-            if (bestNode.heuristic != 0.0){
+            if (bestNode.heuristic != 0.0) {
                 status = "Iteration limit"
             }
             state = GameState(
@@ -131,8 +131,10 @@ class Game {
         uiScope.launch {
             delay(1000)
             while (aStar.isActive && state.isActive) {
-                val message = "frontierNodes: ${aStar.frontierNodes.size}, expandedNodes: ${aStar.expandedNodes.size} \n" +
-                        "/F= ${aStar.bestNode.f}, H= ${aStar.bestNode.heuristic}, G= ${aStar.bestNode.price}\\"
+                val message =
+                    "Iteration: ${aStar.i}, Percent: ${aStar.i.toFloat() / iterationLimit.toFloat() * 100}% \n" +
+                            "frontierNodes: ${aStar.frontierNodes.size}, expandedNodes: ${aStar.expandedNodes.size} \n" +
+                            "/F= ${aStar.bestNode.f}, H= ${aStar.bestNode.heuristic}, G= ${aStar.bestNode.price}\\"
                 state = GameState(
                     message = message,
                     dimensionSize = state.dimensionSize,
@@ -172,7 +174,7 @@ class Game {
         uiScope = CoroutineScope(Dispatchers.Main)
     }
 
-    fun setDelay(delay: Long){
+    fun setDelay(delay: Long) {
         state = GameState(
             message = "Delay set",
             dimensionSize = state.dimensionSize,

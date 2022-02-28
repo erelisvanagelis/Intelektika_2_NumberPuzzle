@@ -33,7 +33,7 @@ fun NPuzzle(game: Game, stopWatch: StopWatch) {
     Row(modifier = Modifier.fillMaxSize().padding(10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Column(
             modifier = Modifier.fillMaxHeight().fillMaxWidth().weight(3f),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedContainer(
