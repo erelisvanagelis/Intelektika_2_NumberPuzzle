@@ -19,11 +19,12 @@ fun GridButtonContainer(
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.border(width = 3.dp, color = color, shape = RoundedCornerShape(4)).padding(10.dp)
+        modifier = Modifier.border(width = 3.dp, color = color, shape = RoundedCornerShape(2)).padding(10.dp)
     ) {
         val dimensionSize = grid[0].size
+        val weight = 1f / dimensionSize
         for (i in 0 until dimensionSize) {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxSize().weight(weight)) {
                 for (j in 0 until dimensionSize) {
                     if (grid[i, j] != 0) {
                         GridButton(
@@ -31,11 +32,11 @@ fun GridButtonContainer(
                             x = i,
                             y = j,
                             onButtonClick = onButtonClick,
-                            modifier = Modifier.width(width = 75.dp).height(height = 75.dp),
+                            modifier = Modifier.fillMaxSize().weight(weight),
                             color = color
                         )
                     } else {
-                        Box(modifier = Modifier.width(width = 75.dp).height(height = 75.dp))
+                        Box(modifier = Modifier.fillMaxSize().weight(weight))
                     }
                 }
             }

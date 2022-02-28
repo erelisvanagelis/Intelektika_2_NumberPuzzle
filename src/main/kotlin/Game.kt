@@ -19,7 +19,7 @@ class Game {
     var state by mutableStateOf(GameState())
         private set
 
-    fun generateList(maxValue: Int): MutableList<Int> {
+    private fun generateList(maxValue: Int): MutableList<Int> {
         val list = mutableListOf<Int>()
         for (i in 0..maxValue) {
             list.add(i)
@@ -42,7 +42,7 @@ class Game {
         }
     }
 
-    fun scrambleByRules(array: D2Array<Int>, moves: Int): NDArray<Int, D2> {
+    private fun scrambleByRules(array: D2Array<Int>, moves: Int): NDArray<Int, D2> {
         val clone = array.copy()
         for (u in 0..moves) {
             val (x, y) = clone.findIndexes(0)
@@ -53,7 +53,7 @@ class Game {
         return clone
     }
 
-    fun scramblePuzzle(dimensionSize: Int) {
+    private fun scramblePuzzle(dimensionSize: Int) {
         val maxValue = dimensionSize * dimensionSize - 1
         val solved = mk.ndarray<Int, D2>(
             generateList(maxValue),
@@ -91,12 +91,13 @@ class Game {
         }
     }
 
-    fun solvePuzzle(iterationLimit: Int) {
+    private fun solvePuzzle(iterationLimit: Int) {
         state = GameState(
             message = "Searching for solution...",
             dimensionSize = state.dimensionSize,
             solvedState = state.solvedState,
             currentStep = state.currentStep,
+            stepCount = state.stepCount,
             currentState = state.currentState,
             stepDelay = state.stepDelay,
             isActive = true
@@ -133,8 +134,8 @@ class Game {
             while (aStar.isActive && state.isActive) {
                 val message =
                     "Iteration: ${aStar.i}, Percent: ${aStar.i.toFloat() / iterationLimit.toFloat() * 100}% \n" +
-                            "frontierNodes: ${aStar.frontierNodes.size}, expandedNodes: ${aStar.expandedNodes.size} \n" +
-                            "/F= ${aStar.bestNode.f}, H= ${aStar.bestNode.heuristic}, G= ${aStar.bestNode.price}\\"
+                            "Frontier Nodes: ${aStar.frontierNodes.size} \n" +
+                            "Closest Node - F= ${aStar.closest.f}, G= ${aStar.closest.price}, H= ${aStar.closest.heuristic}"
                 state = GameState(
                     message = message,
                     dimensionSize = state.dimensionSize,
@@ -151,13 +152,14 @@ class Game {
             while (arrays.size == 0) {
                 delay(1000)
             }
+            val stepCount =  state.stepCount + arrays.size
             for (i in arrays) {
                 state = GameState(
                     message = "Setting pieces",
                     dimensionSize = state.dimensionSize,
                     solvedState = state.solvedState,
                     currentStep = state.currentStep + 1,
-                    stepCount = arrays.size,
+                    stepCount = stepCount,
                     stepDelay = state.stepDelay,
                     currentState = i,
                     status = state.status
@@ -167,7 +169,7 @@ class Game {
         }
     }
 
-    fun resetCoroutines() {
+    private fun resetCoroutines() {
         cpuScope.cancel()
         cpuScope = CoroutineScope(Dispatchers.IO)
         uiScope.cancel()

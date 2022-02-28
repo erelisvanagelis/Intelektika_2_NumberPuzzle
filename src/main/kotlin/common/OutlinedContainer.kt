@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun OutlinedContainer(
-    title: @Composable() () -> Unit,
-    content: @Composable() () -> Unit,
+    title: @Composable () -> Unit,
+    content: @Composable () -> Unit,
     modifier: Modifier = Modifier
         .border(3.dp, color = Color(123, 31, 162), shape = RoundedCornerShape(5))
         .padding(10.dp),
@@ -37,10 +37,10 @@ fun OutlinedContainerPreview() {
     OutlinedContainer(
         title = {
             Text(
-                text = "Testas",
+                text = "Test",
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
         },
-        content = { Text(text = "Testas") })
+        content = { Text(text = "Test") })
 }

@@ -24,7 +24,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "Intelektika_2_8-Delione Antanas_Tamašauskas_PI19C",
-        state = WindowState(size= DpSize(800.dp, 640.dp),)) {
+        state = WindowState(size= DpSize(800.dp, 640.dp))) {
         App()
     }
 }

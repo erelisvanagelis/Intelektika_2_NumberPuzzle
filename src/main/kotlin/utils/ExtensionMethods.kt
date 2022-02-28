@@ -6,23 +6,6 @@ import org.jetbrains.kotlinx.multik.ndarray.data.NDArray
 import org.jetbrains.kotlinx.multik.ndarray.data.get
 import org.jetbrains.kotlinx.multik.ndarray.data.set
 import kotlin.math.sqrt
-import kotlin.random.Random
-
-fun MutableList<Int>.swap(index1: Int, index2: Int) {
-    val tmp = this[index1]
-    this[index1] = this[index2]
-    this[index2] = tmp
-}
-fun MutableList<Int>.randomizeList(changeCount: Int): MutableList<Int> {
-    val size = this.size
-    val randomizedList = this.toMutableList()
-    for (i in 0..changeCount){
-        val x = Random.nextInt(0, size)
-        val y = Random.nextInt(0, size)
-        randomizedList.swap(x, y)
-    }
-    return randomizedList
-}
 
 fun <T, D : Dimension> NDArray<T, D>.findIndexes(t: T): Coordinates {
     val dimensionSize = sqrt(this.size.toDouble()).toInt()
